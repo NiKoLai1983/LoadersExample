@@ -4,5 +4,6 @@
     <file url="file://$PROJECT_DIR$/app/src/main/java/es/jpv/android/examples/loadersexample/MainActivity.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/es/jpv/android/examples/loadersexample/MainActivityFragment.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/java/es/jpv/android/examples/loadersexample/RecyclerViewCursorAdapter.java" charset="UTF-8" />
+    <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>
