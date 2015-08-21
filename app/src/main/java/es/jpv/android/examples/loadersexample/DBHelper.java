@@ -33,7 +33,7 @@ public class DBHelper extends SQLiteOpenHelper {
      *                newer, {@link #onDowngrade} will be used to downgrade the database
      */
     public DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, DataProviderContract.DB_NAME, factory, DataProviderContract.VERSION);
+        super(context, DataProviderContract.DB_NAME, factory, DataProviderContract.DB_VERSION);
     }
 
     /**

@@ -24,7 +24,7 @@ import android.widget.Toast;
  */
 public class MainActivityFragment extends Fragment
         implements RVCursorAdapter.OnItemClickListener, RVCursorAdapter.OnItemLongClickListener,
-                    LoaderManager.LoaderCallbacks<Cursor>{
+                    LoaderManager.LoaderCallbacks<Cursor> {
 
     final int LOADER_ID = 1;
     final String[] PROJECTION = new String[] {
@@ -96,9 +96,13 @@ public class MainActivityFragment extends Fragment
      */
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(
+        return new DBCursorLoader(
                 getActivity(),
-                DataProviderContract.ITEMS_TABLE_CONTENTURI,
+                new DBHelper(
+                        getActivity(),
+                        DataProviderContract.DB_NAME,
+                        null,
+                        DataProviderContract.DB_VERSION),
                 PROJECTION,
                 null, //DBHelper.ITEMS_SELECT_ROWS,
                 null,
