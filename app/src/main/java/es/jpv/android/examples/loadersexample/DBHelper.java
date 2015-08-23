@@ -13,7 +13,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     DataProviderContract.ITEMS_COLUMN_ITEM + " TEXT);";
     private static final String ITEMS_INSERT_ROW =
             "INSERT INTO " + DataProviderContract.ITEMS_TABLE_NAME + " (" +
-                    DataProviderContract.ITEMS_COLUMN_ITEM + ") VALUES ('Item ?');";
+                    DataProviderContract.ITEMS_COLUMN_ITEM + ") VALUES (?);";
     private static final String ITEMS_TABLE_DROP =
             "DROP TABLE IF EXISTS " + DataProviderContract.ITEMS_TABLE_NAME;
     public static final String ITEMS_SELECT_ROWS =
@@ -47,7 +47,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(ITEMS_TABLE_DEFINITION);
         //Create root items
         for (int i=0 ; i<30 ; i++) {
-            db.execSQL(ITEMS_INSERT_ROW, new Object[] { i });
+            db.execSQL(ITEMS_INSERT_ROW, new Object[] { "Item " + i });
         }
     }
 
