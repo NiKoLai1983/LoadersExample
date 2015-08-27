@@ -120,7 +120,7 @@ public class DBCursorLoader extends AsyncTaskLoader<Cursor> {
     }
 
     /**
-     * Starts an asynchronous load of the contacts list data. When the result is ready the callbacks
+     * Starts an asynchronous load of the data. When the result is ready the callbacks
      * will be called on the UI thread. If a previous load has been completed and is still valid
      * the result may be passed to the callbacks immediately.
      *
@@ -216,6 +216,10 @@ public class DBCursorLoader extends AsyncTaskLoader<Cursor> {
         writer.println(Arrays.toString(mSelectionArgs));
         writer.print(prefix); writer.print("mSortOrder="); writer.println(mSortOrder);
         writer.print(prefix); writer.print("mCursor="); writer.println(mCursor);
+    }
+
+    public void execSQL(String sql, Object[] bindArgs, boolean writeMode) {
+        new DBAsyncTask(mDB, this).execute(sql, bindArgs, writeMode);
     }
 }
 

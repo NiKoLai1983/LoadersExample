@@ -75,7 +75,7 @@ public class MainActivityFragment extends Fragment
                 "Clicked " + ((TextView) v.findViewById(R.id.textView)).getText() +
                         " on position " + position,
                 Toast.LENGTH_SHORT).show();
-        getLoaderManager().restartLoader(LOADER_ID, null, this);
+        ((DBCursorLoader) getLoaderManager().getLoader(LOADER_ID))
     }
 
     @Override
@@ -98,13 +98,9 @@ public class MainActivityFragment extends Fragment
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new DBCursorLoader(
                 getActivity(),
-                new DBHelper(
-                        getActivity(),
-                        DataProviderContract.DB_NAME,
-                        null,
-                        DataProviderContract.DB_VERSION),
+                DBHelper.getInstance(getActivity()),
                 PROJECTION,
-                null, //DBHelper.ITEMS_SELECT_ROWS,
+                null,
                 null,
                 null);
     }

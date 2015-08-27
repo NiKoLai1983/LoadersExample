@@ -7,6 +7,8 @@ import android.provider.BaseColumns;
 
 public class DBHelper extends SQLiteOpenHelper {
 
+    private static DBHelper sInstance;
+
     private static final String ITEMS_TABLE_DEFINITION =
             "CREATE TABLE IF NOT EXISTS " + DataProviderContract.ITEMS_TABLE_NAME +
                 " ( " + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -16,8 +18,22 @@ public class DBHelper extends SQLiteOpenHelper {
                     DataProviderContract.ITEMS_COLUMN_ITEM + ") VALUES (?);";
     private static final String ITEMS_TABLE_DROP =
             "DROP TABLE IF EXISTS " + DataProviderContract.ITEMS_TABLE_NAME;
-    public static final String ITEMS_SELECT_ROWS =
-            "SELECT * FROM " + DataProviderContract.ITEMS_TABLE_NAME;
+
+    public static synchronized DBHelper getInstance(Context context) {
+
+        // Use the application context, which will ensure that you
+        // don't accidentally leak an Activity's context.
+        // See this article for more information: http://bit.ly/6LRzfx
+        if (sInstance == null) {
+            sInstance = new DBHelper(
+                    context.getApplicationContext(),
+                    DataProviderContract.DB_NAME,
+                    null,
+                    DataProviderContract.DB_VERSION
+            );
+        }
+        return sInstance;
+    }
 
     /**
      * Create a helper object to create, open, and/or manage a database.
@@ -32,7 +48,7 @@ public class DBHelper extends SQLiteOpenHelper {
      *                {@link #onUpgrade} will be used to upgrade the database; if the database is
      *                newer, {@link #onDowngrade} will be used to downgrade the database
      */
-    public DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+    private DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, DataProviderContract.DB_NAME, factory, DataProviderContract.DB_VERSION);
     }
 
