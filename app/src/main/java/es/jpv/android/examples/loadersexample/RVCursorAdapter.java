@@ -62,6 +62,7 @@ public class RVCursorAdapter extends RecyclerViewCursorAdapter<RVCursorAdapter.V
     @Override
     public void onBindViewHolder(RVCursorAdapter.ViewHolder viewHolder, int i) {
         getCursor().moveToPosition(i);
+        viewHolder.itemID.setText(mCursor.getString(0));
         viewHolder.itemName.setText(mCursor.getString(1));
         viewHolder.position = i;
     }
@@ -79,6 +80,7 @@ public class RVCursorAdapter extends RecyclerViewCursorAdapter<RVCursorAdapter.V
 
         LinearLayout linearLayout;
         TextView itemName;
+        TextView itemID;
         int position;
         OnItemClickListener mClickListener;
         OnItemLongClickListener mLongClickListener;
@@ -90,6 +92,7 @@ public class RVCursorAdapter extends RecyclerViewCursorAdapter<RVCursorAdapter.V
             super(itemView);
             this.mClickListener = mClickListener;
             this.mLongClickListener = mLongClickListener;
+            itemID = (TextView) itemView.findViewById(R.id.row_id);
             itemName = (TextView) itemView.findViewById(R.id.textView);
             itemName.setOnClickListener(this);
             itemName.setOnLongClickListener(this);

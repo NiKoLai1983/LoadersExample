@@ -218,7 +218,7 @@ public class DBCursorLoader extends AsyncTaskLoader<Cursor> {
         writer.print(prefix); writer.print("mCursor="); writer.println(mCursor);
     }
 
-    public void execSQL(String sql, Object[] bindArgs, boolean writeMode) {
+    public void execSQL(String sql, boolean writeMode, Object... bindArgs) {
         new DBAsyncTask(mDB, this).execute(sql, bindArgs, writeMode);
     }
 }

@@ -9,7 +9,7 @@ public final class DataProviderContract implements BaseColumns {
     /**
      * Database file name
      */
-    public static final String DB_NAME = "DummyItemsData";
+    public static final String DB_NAME = "dummyitemsdata.db";
 
     /**
      * Database file version

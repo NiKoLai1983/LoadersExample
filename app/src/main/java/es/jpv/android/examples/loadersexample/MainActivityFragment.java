@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -71,20 +72,33 @@ public class MainActivityFragment extends Fragment
 
     @Override
     public void onItemClick(View v, int position) {
+        String rowID = retrieveItemID(v);
+        if (rowID == null) {
+            throw new IllegalStateException("Unexpected View type has been clicked");
+        }
+        getLoaderManager().restartLoader(LOADER_ID, null, this);
         Toast.makeText(getActivity(),
                 "Clicked " + ((TextView) v.findViewById(R.id.textView)).getText() +
-                        " on position " + position,
+                        " on position " + position + " with DB ID " + rowID,
                 Toast.LENGTH_SHORT).show();
-        ((DBCursorLoader) getLoaderManager().getLoader(LOADER_ID))
     }
 
     @Override
     public void onItemLongClick(View v, int position) {
+        String rowID = retrieveItemID(v);
+        if (rowID == null) {
+            throw new IllegalStateException("Unexpected View type has been clicked");
+        }
+        Loader<?> loader = getLoaderManager().getLoader(LOADER_ID);
+        ((DBCursorLoader) loader).execSQL(
+                DBHelper.ITEMS_DELETE_ITEM,
+                true,
+                rowID + "=" + BaseColumns._ID
+        );
         Toast.makeText(getActivity(),
                 "Long-clicked " + ((TextView) v.findViewById(R.id.textView)).getText() +
-                        " on position " + position,
+                        " on position " + position + " with DB ID " + rowID,
                 Toast.LENGTH_SHORT).show();
-        getLoaderManager().restartLoader(LOADER_ID, null, this);
     }
 
     /**
@@ -159,5 +173,20 @@ public class MainActivityFragment extends Fragment
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         adapter.swapCursor(null);
+    }
+
+    /**
+     *
+     * @param v
+     * @return
+     */
+    public String retrieveItemID(View v) {
+        if (v instanceof LinearLayout) {
+            return ((TextView) v.findViewById(R.id.row_id)).getText().toString();
+        } else if (v instanceof TextView) {
+            return ((TextView) v).getText().toString();
+        } else {
+            return null;
+        }
     }
 }

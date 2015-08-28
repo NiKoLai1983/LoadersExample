@@ -9,6 +9,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private static DBHelper sInstance;
 
+    //Private SQL
     private static final String ITEMS_TABLE_DEFINITION =
             "CREATE TABLE IF NOT EXISTS " + DataProviderContract.ITEMS_TABLE_NAME +
                 " ( " + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -18,6 +19,10 @@ public class DBHelper extends SQLiteOpenHelper {
                     DataProviderContract.ITEMS_COLUMN_ITEM + ") VALUES (?);";
     private static final String ITEMS_TABLE_DROP =
             "DROP TABLE IF EXISTS " + DataProviderContract.ITEMS_TABLE_NAME;
+
+    //Public SQL
+    public static final String ITEMS_DELETE_ITEM = "DELETE FROM " +
+            DataProviderContract.ITEMS_TABLE_NAME + " WHERE ?";
 
     public static synchronized DBHelper getInstance(Context context) {
 
