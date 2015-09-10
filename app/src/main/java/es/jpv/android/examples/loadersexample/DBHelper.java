@@ -9,6 +9,10 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private static DBHelper sInstance;
 
+    //Strings to construct SQL statements
+    private static String EQUAL = "=";
+    private static String ARG = "?";
+
     //Private SQL
     private static final String ITEMS_TABLE_DEFINITION =
             "CREATE TABLE IF NOT EXISTS " + DataProviderContract.ITEMS_TABLE_NAME +
@@ -21,8 +25,11 @@ public class DBHelper extends SQLiteOpenHelper {
             "DROP TABLE IF EXISTS " + DataProviderContract.ITEMS_TABLE_NAME;
 
     //Public SQL
-    public static final String ITEMS_DELETE_ITEM = "DELETE FROM " +
-            DataProviderContract.ITEMS_TABLE_NAME + " WHERE ?";
+    public static final String ITEMS_ADD_ITEM = "INSERT INTO "
+            + DataProviderContract.ITEMS_TABLE_NAME + "(" + DataProviderContract.ITEMS_COLUMN_ITEM
+            + ") VALUES (" + ARG + ")";
+    public static final String ITEMS_DELETE_ITEM_BY_ID = "DELETE FROM " +
+            DataProviderContract.ITEMS_TABLE_NAME + " WHERE " + BaseColumns._ID + EQUAL + ARG;
 
     public static synchronized DBHelper getInstance(Context context) {
 

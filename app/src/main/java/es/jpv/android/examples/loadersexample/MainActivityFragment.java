@@ -72,32 +72,38 @@ public class MainActivityFragment extends Fragment
 
     @Override
     public void onItemClick(View v, int position) {
-        String rowID = retrieveItemID(v);
+        Integer rowID = retrieveItemID(v);
         if (rowID == null) {
             throw new IllegalStateException("Unexpected View type has been clicked");
         }
-        getLoaderManager().restartLoader(LOADER_ID, null, this);
+        Loader<?> loader = getLoaderManager().getLoader(LOADER_ID);
+        //Be careful with getItemCount().
+        ((DBCursorLoader) loader).execSQL(
+                DBHelper.ITEMS_ADD_ITEM,
+                true,
+                "Item " + adapter.getItemCount()
+        );
         Toast.makeText(getActivity(),
                 "Clicked " + ((TextView) v.findViewById(R.id.textView)).getText() +
-                        " on position " + position + " with DB ID " + rowID,
+                        " on position " + position + " with DB ID " + rowID.toString(),
                 Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onItemLongClick(View v, int position) {
-        String rowID = retrieveItemID(v);
+        Integer rowID = retrieveItemID(v);
         if (rowID == null) {
             throw new IllegalStateException("Unexpected View type has been clicked");
         }
         Loader<?> loader = getLoaderManager().getLoader(LOADER_ID);
         ((DBCursorLoader) loader).execSQL(
-                DBHelper.ITEMS_DELETE_ITEM,
+                DBHelper.ITEMS_DELETE_ITEM_BY_ID,
                 true,
-                rowID + "=" + BaseColumns._ID
+                rowID
         );
         Toast.makeText(getActivity(),
-                "Long-clicked " + ((TextView) v.findViewById(R.id.textView)).getText() +
-                        " on position " + position + " with DB ID " + rowID,
+                "Deleted " + ((TextView) v.findViewById(R.id.textView)).getText() +
+                        " on position " + position + " with DB ID " + rowID.toString(),
                 Toast.LENGTH_SHORT).show();
     }
 
@@ -176,17 +182,16 @@ public class MainActivityFragment extends Fragment
     }
 
     /**
+     * Returns the item BaseColumn ID (_id)
      *
      * @param v
-     * @return
+     * @return _id value of the item
      */
-    public String retrieveItemID(View v) {
-        if (v instanceof LinearLayout) {
-            return ((TextView) v.findViewById(R.id.row_id)).getText().toString();
-        } else if (v instanceof TextView) {
-            return ((TextView) v).getText().toString();
-        } else {
-            return null;
+    public Integer retrieveItemID(View v) {
+        //If TextView is clicked we need to get the Parent to find the hidden TextView with the _id
+        if (v instanceof TextView) {
+            v = (LinearLayout) v.getParent();
         }
+        return new Integer(((TextView) v.findViewById(R.id.row_id)).getText().toString());
     }
 }
