@@ -74,7 +74,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(ITEMS_TABLE_DEFINITION);
         //Create root items
-        for (int i=0 ; i<30 ; i++) {
+        for (int i=0 ; i<101 ; i++) {
             db.execSQL(ITEMS_INSERT_ROW, new Object[] { "Item " + i });
         }
     }

@@ -42,8 +42,27 @@ public class MainActivityFragment extends Fragment
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_main, container, false);
         RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
-        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
+        final LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(llm);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            /**
+             * Callback method to be invoked when RecyclerView's scroll state changes.
+             *
+             * @param recyclerView The RecyclerView whose scroll state has changed.
+             * @param newState     The updated scroll state. One of {@link #SCROLL_STATE_IDLE},
+             *                     {@link #SCROLL_STATE_DRAGGING} or {@link #SCROLL_STATE_SETTLING}.
+             */
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE &&
+                        adapter.getItemCount() == llm.findLastCompletelyVisibleItemPosition()) {
+                    Toast.makeText(getActivity(),
+                            "End of the list!!",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         adapter = new RVCursorAdapter(getActivity(), null);
         adapter.setOnItemClickListener(this);
         adapter.setOnItemLongClickListener(this);
