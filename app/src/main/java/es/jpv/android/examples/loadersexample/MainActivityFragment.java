@@ -24,7 +24,8 @@ import android.widget.Toast;
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment
-        implements RVCursorAdapter.OnItemClickListener, RVCursorAdapter.OnItemLongClickListener {
+        implements RVCursorAdapter.OnItemClickListener, RVCursorAdapter.OnItemLongClickListener,
+                    EndlessScrollListener.EndlessScrollLoader {
 
     final int LOADER_ID = 1;
     final String[] PROJECTION = new String[] {
@@ -41,32 +42,9 @@ public class MainActivityFragment extends Fragment
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_main, container, false);
         RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
-        final LinearLayoutManager llm = new LinearLayoutManager(getActivity());
+        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(llm);
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            /**
-             * Callback method to be invoked when RecyclerView's scroll state changes.
-             *
-             * When the RecyclerView stops scrolling we check the last item that is fully visible.
-             * Should the last visible list item match with the number of items in the adapter,
-             * we have reached the end of the list so we do another query to get more rows
-             *
-             * @param recyclerView The RecyclerView whose scroll state has changed.
-             * @param newState     The updated scroll state.
-             */
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    int lastVisibleItem = llm.findLastCompletelyVisibleItemPosition() + 1;
-                    if (lastVisibleItem >= adapter.getItemCount()) {
-                        Toast.makeText(getActivity(),
-                                "End of list!!",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        });
+        recyclerView.addOnScrollListener(new EndlessScrollListener(this, llm));
         adapter = new RVCursorAdapter(getActivity(), null);
         adapter.setOnItemClickListener(this);
         adapter.setOnItemLongClickListener(this);
@@ -90,7 +68,7 @@ public class MainActivityFragment extends Fragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(LOADER_ID, null, this.new DBLoader());
+        getLoaderManager().initLoader(LOADER_ID, null, new DBLoader());
     }
 
     @Override
@@ -142,6 +120,16 @@ public class MainActivityFragment extends Fragment
             v = (LinearLayout) v.getParent();
         }
         return new Integer(((TextView) v.findViewById(R.id.row_id)).getText().toString());
+    }
+
+    /**
+     * Endless RecyclerView page loader
+     * <p/>
+     * When a RecyclerView is scrolled until its end this method is invoked to load more rows
+     */
+    @Override
+    public void loadMore() {
+        Toast.makeText(getActivity(), "End of the list!!", Toast.LENGTH_SHORT).show();
     }
 
     private class DBLoader implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -220,10 +208,6 @@ public class MainActivityFragment extends Fragment
             adapter.swapCursor(null);
         }
 
-    }
-
-    private void loadMore() {
-        adapter.getCursor().moveToLast();
     }
 
 }
