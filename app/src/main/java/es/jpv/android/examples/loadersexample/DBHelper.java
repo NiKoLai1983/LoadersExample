@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2015 Jesús Platas Varet
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package es.jpv.android.examples.loadersexample;
 
 import android.content.Context;
@@ -8,10 +23,6 @@ import android.provider.BaseColumns;
 public class DBHelper extends SQLiteOpenHelper {
 
     private static DBHelper sInstance;
-
-    //Strings to construct SQL statements
-    private static String EQUAL = "=";
-    private static String ARG = "?";
 
     //Private SQL
     private static final String ITEMS_TABLE_DEFINITION =
@@ -26,10 +37,11 @@ public class DBHelper extends SQLiteOpenHelper {
 
     //Public SQL
     public static final String ITEMS_ADD_ITEM = "INSERT INTO "
-            + DataProviderContract.ITEMS_TABLE_NAME + "(" + DataProviderContract.ITEMS_COLUMN_ITEM
-            + ") VALUES (" + ARG + ")";
+            + DataProviderContract.ITEMS_TABLE_NAME +
+            "(" + DataProviderContract.ITEMS_COLUMN_ITEM + ") VALUES (?)";
     public static final String ITEMS_DELETE_ITEM_BY_ID = "DELETE FROM " +
-            DataProviderContract.ITEMS_TABLE_NAME + " WHERE " + BaseColumns._ID + EQUAL + ARG;
+            DataProviderContract.ITEMS_TABLE_NAME + " WHERE " + BaseColumns._ID + " = ?";
+
 
     public static synchronized DBHelper getInstance(Context context) {
 
@@ -104,4 +116,5 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(ITEMS_TABLE_DROP);
         onCreate(db);
     }
+
 }

@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2015 Jesús Platas Varet
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package es.jpv.android.examples.loadersexample;
 
 import android.content.Context;
@@ -33,6 +48,7 @@ public class MainActivityFragment extends Fragment
             DataProviderContract.ITEMS_COLUMN_ITEM
     };
     RVCursorAdapter adapter;
+    long lastLimitLoaded = DataProviderContract.ITEMS_RV_LIMIT;
 
     public MainActivityFragment() {
     }
@@ -68,7 +84,12 @@ public class MainActivityFragment extends Fragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(LOADER_ID, null, new DBLoader());
+        Bundle loaderArgs = new Bundle();
+        loaderArgs.putString("Table", DataProviderContract.ITEMS_TABLE_NAME);
+        loaderArgs.putStringArray("Projection", PROJECTION);
+        loaderArgs.putString("Order", BaseColumns._ID);
+        loaderArgs.putLong("Limit", lastLimitLoaded);
+        getLoaderManager().initLoader(LOADER_ID, loaderArgs, new DBSelectLoader());
     }
 
     @Override
@@ -79,7 +100,7 @@ public class MainActivityFragment extends Fragment
         }
         Loader<?> loader = getLoaderManager().getLoader(LOADER_ID);
         //Be careful with getItemCount().
-        ((DBCursorLoader) loader).execSQL(
+        ((DBSelectCursorLoader) loader).execSQL(
                 DBHelper.ITEMS_ADD_ITEM,
                 true,
                 "Item " + adapter.getItemCount()
@@ -97,7 +118,7 @@ public class MainActivityFragment extends Fragment
             throw new IllegalStateException("Unexpected View type has been clicked");
         }
         Loader<?> loader = getLoaderManager().getLoader(LOADER_ID);
-        ((DBCursorLoader) loader).execSQL(
+        ((DBSelectCursorLoader) loader).execSQL(
                 DBHelper.ITEMS_DELETE_ITEM_BY_ID,
                 true,
                 rowID
@@ -129,10 +150,15 @@ public class MainActivityFragment extends Fragment
      */
     @Override
     public void loadMore() {
-        Toast.makeText(getActivity(), "End of the list!!", Toast.LENGTH_SHORT).show();
+        Bundle loaderArgs = new Bundle();
+        loaderArgs.putString("Table", DataProviderContract.ITEMS_TABLE_NAME);
+        loaderArgs.putStringArray("Projection", PROJECTION);
+        loaderArgs.putString("Order", BaseColumns._ID);
+        loaderArgs.putLong("Limit", lastLimitLoaded);
+        getLoaderManager().restartLoader(LOADER_ID, loaderArgs, new DBSelectLoader());
     }
 
-    private class DBLoader implements LoaderManager.LoaderCallbacks<Cursor> {
+    private class DBSelectLoader implements LoaderManager.LoaderCallbacks<Cursor> {
 
         /**
          * Instantiate and return a new Loader for the given ID.
@@ -143,13 +169,16 @@ public class MainActivityFragment extends Fragment
          */
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            return new DBCursorLoader(
+            return new DBSelectCursorLoader(
                     getActivity(),
                     DBHelper.getInstance(getActivity()),
-                    PROJECTION,
-                    null,
-                    null,
-                    null);
+                    args.getString("Table"),
+                    args.getStringArray("Projection"),
+                    args.getString("Selection"),
+                    args.getStringArray("SelectionArgs"),
+                    args.getString("Order"),
+                    args.getLong("Limit")
+            );
         }
 
         /**
@@ -193,6 +222,7 @@ public class MainActivityFragment extends Fragment
          */
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            lastLimitLoaded = lastLimitLoaded + 15;
             adapter.swapCursor(data);
         }
 
@@ -206,6 +236,7 @@ public class MainActivityFragment extends Fragment
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
             adapter.swapCursor(null);
+            lastLimitLoaded = DataProviderContract.ITEMS_RV_LIMIT;
         }
 
     }

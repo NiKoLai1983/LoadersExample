@@ -37,14 +37,16 @@ import java.util.Arrays;
  * to switch to the framework's implementation.  See the framework SDK
  * documentation for a class overview.
  */
-public class DBCursorLoader extends AsyncTaskLoader<Cursor> {
+public class DBSelectCursorLoader extends AsyncTaskLoader<Cursor> {
     final ForceLoadContentObserver mObserver;
 
     SQLiteOpenHelper mDB;
+    String mTable;
     String[] mProjection;
     String mSelection;
     String[] mSelectionArgs;
     String mSortOrder;
+    Long mLimit;
 
     Cursor mCursor;
 
@@ -52,15 +54,14 @@ public class DBCursorLoader extends AsyncTaskLoader<Cursor> {
     @Override
     public Cursor loadInBackground() {
         Cursor cursor = mDB.getReadableDatabase().query(
-                false,
-                DataProviderContract.ITEMS_TABLE_NAME,
+                mTable,
                 mProjection,
                 mSelection,
                 mSelectionArgs,
                 null,
                 null,
                 mSortOrder,
-                null
+                String.valueOf(mLimit)
         );
         if (cursor != null) {
             // Ensure the cursor window is filled
@@ -93,30 +94,33 @@ public class DBCursorLoader extends AsyncTaskLoader<Cursor> {
     }
 
     /**
-     * Creates an empty unspecified DBCursorLoader.  You must follow this with
+     * Creates an empty unspecified DBSelectCursorLoader.  You must follow this with
      * calls to {@link #setDB(SQLiteOpenHelper)}, {@link #setSelection(String)}, etc
      * to specify the query to perform.
      */
-    public DBCursorLoader(Context context) {
+    public DBSelectCursorLoader(Context context) {
         super(context);
         mObserver = new ForceLoadContentObserver();
     }
 
     /**
-     * Creates a fully-specified DBCursorLoader.  See
+     * Creates a fully-specified DBSelectCursorLoader.  See
      * {@link android.content.ContentResolver#query(Uri, String[], String, String[], String)
      * ContentResolver.query()} for documentation on the meaning of the
      * parameters. db refers to the instance of the SQLiteOpenHelper subclass used in the app
      */
-    public DBCursorLoader(Context context, SQLiteOpenHelper db, String[] projection,
-                        String selection, String[] selectionArgs, String sortOrder) {
+    public DBSelectCursorLoader(Context context, SQLiteOpenHelper db, String tableName,
+                                String[] projection, String selection, String[] selectionArgs,
+                                String sortOrder, Long limit) {
         super(context);
         mObserver = new ForceLoadContentObserver();
         mDB = db;
+        mTable = tableName;
         mProjection = projection;
         mSelection = selection;
         mSelectionArgs = selectionArgs;
         mSortOrder = sortOrder;
+        mLimit = limit;
     }
 
     /**
