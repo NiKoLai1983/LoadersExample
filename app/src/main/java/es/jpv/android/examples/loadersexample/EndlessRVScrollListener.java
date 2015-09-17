@@ -18,13 +18,19 @@ package es.jpv.android.examples.loadersexample;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-public class EndlessScrollListener extends RecyclerView.OnScrollListener {
+/**
+ * <p>Detects when a RecyclerView has been scrolled to the bottom.</p>
+ * <p>This is useful not to load a big dataset into a RecyclerView all at once.</p>
+ * <p>The class responsible of loading more rows has to implement
+ * the EndlessRVScrollListener.EndlessScrollLoader interface</p>
+ */
+public class EndlessRVScrollListener extends RecyclerView.OnScrollListener {
 
     private EndlessScrollLoader mLoader;
     private LinearLayoutManager llm;
     private int lastItemCount;
 
-    public EndlessScrollListener(EndlessScrollLoader callback, LinearLayoutManager llm) {
+    public EndlessRVScrollListener(EndlessScrollLoader callback, LinearLayoutManager llm) {
         mLoader = callback;
         this.llm = llm;
     }
@@ -34,7 +40,7 @@ public class EndlessScrollListener extends RecyclerView.OnScrollListener {
      */
     public interface EndlessScrollLoader {
         /**
-         * Endless RecyclerView page loader
+         * <p>Endless RecyclerView page loader</p>
          *
          * When a RecyclerView is scrolled until its end this method is invoked to load more rows
          */

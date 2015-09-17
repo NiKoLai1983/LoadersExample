@@ -18,7 +18,7 @@
  *
  * Copyright (C) 2011 The Android Open Source Project
  */
-package es.jpv.android.examples.loadersexample;
+package es.jpv.android.examples.loadersexample.db;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -31,11 +31,7 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 
 /**
- * Static library support version of the framework's {@link android.content.CursorLoader}.
- * Used to write apps that run on platforms prior to Android 3.0.  When running
- * on Android 3.0 or above, this implementation is still used; it does not try
- * to switch to the framework's implementation.  See the framework SDK
- * documentation for a class overview.
+ * Allows to execute SQL SELECT statements on the UI thread asynchronously
  */
 public class DBSelectCursorLoader extends AsyncTaskLoader<Cursor> {
     final ForceLoadContentObserver mObserver;
@@ -50,7 +46,11 @@ public class DBSelectCursorLoader extends AsyncTaskLoader<Cursor> {
 
     Cursor mCursor;
 
-    /* Runs on a worker thread */
+    /**
+     * Runs a query asynchronously
+     *
+     * @return A Cursor object with the data
+     */
     @Override
     public Cursor loadInBackground() {
         Cursor cursor = mDB.getReadableDatabase().query(
@@ -222,6 +222,13 @@ public class DBSelectCursorLoader extends AsyncTaskLoader<Cursor> {
         writer.print(prefix); writer.print("mCursor="); writer.println(mCursor);
     }
 
+    /**
+     * Executes a raw SQL statement asynchronously
+     *
+     * @param sql The SQL statement to execute. Arguments have to be written as ?
+     * @param writeMode false if we want to access the database on read-only mode
+     * @param bindArgs Arguments to be binded to the SQL statement
+     */
     public void execSQL(String sql, boolean writeMode, Object... bindArgs) {
         new DBAsyncTask(mDB, this).execute(sql, bindArgs, writeMode);
     }

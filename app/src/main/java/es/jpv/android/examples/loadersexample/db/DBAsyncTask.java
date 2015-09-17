@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package es.jpv.android.examples.loadersexample;
+package es.jpv.android.examples.loadersexample.db;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -21,29 +21,33 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v4.content.Loader;
 
+/**
+ * Allows to execute SQL stataments on the UI thread asynchronously
+ */
 public class DBAsyncTask extends AsyncTask<Object, Void, Exception> {
 
     SQLiteOpenHelper mDB = null;
     Loader mLoader = null;
 
+    /**
+     * Constructor
+     * </p>
+     * @param mDB A class extending SQLiteOpenHelper
+     * @param mLoader A Loader instance. This loader is notified after task completes
+     */
     public DBAsyncTask(@NonNull SQLiteOpenHelper mDB, @NonNull Loader mLoader) {
         this.mDB = mDB;
         this.mLoader = mLoader;
     }
 
     /**
-     * Override this method to perform a computation on a background thread. The
-     * specified parameters are the parameters passed to {@link #execute}
-     * by the caller of this task.
-     * <p/>
-     * This method can call {@link #publishProgress} to publish updates
-     * on the UI thread.
-     *
-     * @param params The parameters of the task.
-     * @return A result, defined by the subclass of this task.
-     * @see #onPreExecute()
-     * @see #onPostExecute
-     * @see #publishProgress
+     * <p>Performs an asynchronous SQL query on the database</p>
+     * </p>
+     * @param params The parameters of the query.
+     *               <p>params[0] contains an SQL statement with arguments as ?</p>
+     *               <p>params[1] contains the arguments of the statament as an array</p>
+     *               <p>params[2] contains true if we want the database to be writable</p>
+     * @return If an Exception is generated, we return it.
      */
     @Override
     protected Exception doInBackground(Object... params) {
@@ -71,17 +75,15 @@ public class DBAsyncTask extends AsyncTask<Object, Void, Exception> {
     /**
      * <p>Runs on the UI thread after {@link #doInBackground}. The
      * specified result is the value returned by {@link #doInBackground}.</p>
-     * <p/>
+     * <p>The Loader associated with the task will be notified that changes have been made</p>
      * <p>This method won't be invoked if the task was cancelled.</p>
      *
      * @param e The result of the operation computed by {@link #doInBackground}.
-     * @see #onPreExecute
-     * @see #doInBackground
-     * @see #onCancelled(Object)
      */
     @Override
     protected void onPostExecute(Exception e) {
         super.onPostExecute(e);
         mLoader.onContentChanged();
     }
+
 }

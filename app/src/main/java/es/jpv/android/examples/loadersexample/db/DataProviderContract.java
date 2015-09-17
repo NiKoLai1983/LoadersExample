@@ -13,12 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package es.jpv.android.examples.loadersexample;
+package es.jpv.android.examples.loadersexample.db;
 
 import android.provider.BaseColumns;
 
+/**
+ * Contract class for the SQLite database
+ */
 public final class DataProviderContract implements BaseColumns {
 
+    /**
+     * We are not supposed to create instances of this, so private constructor
+     */
     private DataProviderContract() { }
 
     /**

@@ -34,13 +34,18 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import es.jpv.android.examples.loadersexample.adapters.RVCursorAdapter;
+import es.jpv.android.examples.loadersexample.db.DBHelper;
+import es.jpv.android.examples.loadersexample.db.DBSelectCursorLoader;
+import es.jpv.android.examples.loadersexample.db.DataProviderContract;
+
 
 /**
- * A placeholder fragment containing a simple view.
+ * This fragment contains a RecyclerView with items which we can interact with
  */
 public class MainActivityFragment extends Fragment
         implements RVCursorAdapter.OnItemClickListener, RVCursorAdapter.OnItemLongClickListener,
-                    EndlessScrollListener.EndlessScrollLoader {
+                    EndlessRVScrollListener.EndlessScrollLoader {
 
     final int LOADER_ID = 1;
     final String[] PROJECTION = new String[] {
@@ -50,9 +55,12 @@ public class MainActivityFragment extends Fragment
     RVCursorAdapter adapter;
     long lastLimitLoaded = DataProviderContract.ITEMS_RV_LIMIT;
 
-    public MainActivityFragment() {
-    }
+    public MainActivityFragment() { }
 
+    /**
+     * <p>Creates the RecyclerView shown in the Fragment with its adapter.</p>
+     * <p>The adapter is created with no data at this point.</p>
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -60,7 +68,7 @@ public class MainActivityFragment extends Fragment
         RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(llm);
-        recyclerView.addOnScrollListener(new EndlessScrollListener(this, llm));
+        recyclerView.addOnScrollListener(new EndlessRVScrollListener(this, llm));
         adapter = new RVCursorAdapter(getActivity(), null);
         adapter.setOnItemClickListener(this);
         adapter.setOnItemLongClickListener(this);
@@ -69,17 +77,7 @@ public class MainActivityFragment extends Fragment
     }
 
     /**
-     * Called when the fragment's activity has been created and this
-     * fragment's view hierarchy instantiated.  It can be used to do final
-     * initialization once these pieces are in place, such as retrieving
-     * views or restoring state.  It is also useful for fragments that use
-     * {@link #setRetainInstance(boolean)} to retain their instance,
-     * as this callback tells the fragment when it is fully associated with
-     * the new activity instance.  This is called after {@link #onCreateView}
-     * and before {@link #onViewStateRestored(Bundle)}.
-     *
-     * @param savedInstanceState If the fragment is being re-created from
-     *                           a previous saved state, this is the state.
+     * Initiates the Loader to perform the first load of data onto the RecyclerView
      */
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -92,6 +90,12 @@ public class MainActivityFragment extends Fragment
         getLoaderManager().initLoader(LOADER_ID, loaderArgs, new DBSelectLoader());
     }
 
+    /**
+     * Called when a View contained into a RVCursorAdapter is clicked
+     *
+     * @param v The View that was clicked
+     * @param position Position with respect to the adapter that was clicked
+     */
     @Override
     public void onItemClick(View v, int position) {
         Integer rowID = retrieveItemID(v);
@@ -111,6 +115,12 @@ public class MainActivityFragment extends Fragment
                 Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Called when a View contained into a RVCursorAdapter is long-clicked
+     *
+     * @param v The View that was long-clicked
+     * @param position Position with respect to the adapter that was long-clicked
+     */
     @Override
     public void onItemLongClick(View v, int position) {
         Integer rowID = retrieveItemID(v);
@@ -144,8 +154,8 @@ public class MainActivityFragment extends Fragment
     }
 
     /**
-     * Endless RecyclerView page loader
-     * <p/>
+     * <p>Endless RecyclerView page loader</p>
+     *
      * When a RecyclerView is scrolled until its end this method is invoked to load more rows
      */
     @Override
@@ -222,7 +232,7 @@ public class MainActivityFragment extends Fragment
          */
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            lastLimitLoaded = lastLimitLoaded + 15;
+            lastLimitLoaded = lastLimitLoaded + DataProviderContract.ITEMS_RV_LIMIT;
             adapter.swapCursor(data);
         }
 

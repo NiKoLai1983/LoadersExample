@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package es.jpv.android.examples.loadersexample.dummy;
+package es.jpv.android.examples.loadersexample.db.dummy;
 
 import android.database.Cursor;
 import android.database.MatrixCursor;
@@ -24,8 +24,6 @@ import java.util.Map;
 /**
  * Helper class for providing sample content for user interfaces created by
  * Android template wizards.
- * <p/>
- * TODO: Replace all uses of this class before publishing your app.
  */
 public class DummyContent {
 
@@ -44,6 +42,11 @@ public class DummyContent {
         buildCursor();
     }
 
+    /**
+     * Uses the objects contained in the ITEMS Map to create a Cursor
+     *
+     * @return A MatrixCursor containing the items
+     */
     public static Cursor buildCursor() {
         ITEMS_CURSOR = new MatrixCursor(new String[] {"_id", "value"});
         for (Map.Entry<String, String> entry : ITEMS.entrySet()) {
@@ -52,11 +55,23 @@ public class DummyContent {
         return ITEMS_CURSOR;
     }
 
+    /**
+     * Adds a new item to the ITEMS list. Then a new Cursor is generated and returned.
+     *
+     * @param key Key used as ID of the item. The item description is also generated using this
+     * @return Cursor object with the updated data
+     */
     public static Cursor addItem(Integer key) {
         ITEMS.put(String.valueOf(key), "Item " + key);
         return buildCursor();
     }
 
+    /**
+     * Deletes an item from the ITEMS Map. Then a new Cursor is generated and returned
+     *
+     * @param position position to delete
+     * @return Cursor object with the updated data
+     */
     public static Cursor deleteItem(int position) {
         ITEMS_CURSOR.moveToPosition(position);
         String keyToDelete = ITEMS_CURSOR.getString(0); //ID

@@ -18,14 +18,25 @@
  *
  * Copyright (C) 2006 The Android Open Source Project
  */
-package es.jpv.android.examples.loadersexample;
+package es.jpv.android.examples.loadersexample.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DataSetObserver;
+import android.provider.BaseColumns;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
+/**
+ * Abstract adapter class meant to use Cursor to populate a RecyclerView.
+ *
+ * The adapter class extending this one only needs to define the way views behave
+ * (for example implementing click listeners) and how are populated. Cursor management is done here.
+ *
+ * @param <VH> The class extending this has to implement an static inner class extending
+ *            RecyclerView.ViewHolder. This class manages the content and behaviour of the
+ *            views contained in the RecyclerView
+ */
 public abstract class RecyclerViewCursorAdapter<VH extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<VH> {
 
@@ -38,8 +49,8 @@ public abstract class RecyclerViewCursorAdapter<VH extends RecyclerView.ViewHold
     /**
      * Constructor
      *
-     * @param context
-     * @param cursor
+     * @param context The context associated to the adapter
+     * @param cursor The cursor which contains the data we want to deal with
      */
     public RecyclerViewCursorAdapter(Context context, Cursor cursor) {
         mContext = context;
@@ -47,8 +58,8 @@ public abstract class RecyclerViewCursorAdapter<VH extends RecyclerView.ViewHold
     }
 
     /**
-     * New ViewHolder objects are created here.
-     * Those objects represent an single item shown inside the RecyclerView
+     * <p>New ViewHolder objects are created here.</p>
+     * <p>Those objects represent an single item shown inside the RecyclerView.</p>
      * LayoutInflater can be used to inflate a new RecyclerView.ViewHolder instance using XML
      * layout resources.
      *
@@ -60,11 +71,11 @@ public abstract class RecyclerViewCursorAdapter<VH extends RecyclerView.ViewHold
     public abstract VH onCreateViewHolder(ViewGroup viewGroup, int i);
 
     /**
-     * Defines the content of a given ViewHolder instance.
+     * <p>Defines the content of a given ViewHolder instance.</p>
      * Allows population of data to be shown in the RecyclerView item or definition
      * of internal members, such as listeners
      *
-     * @param viewHolder
+     * @param viewHolder ViewHolder to which content will be binded
      * @param i          Position in relation to the adapter
      */
     @Override
@@ -82,7 +93,7 @@ public abstract class RecyclerViewCursorAdapter<VH extends RecyclerView.ViewHold
     /**
      * Sets a DataSetObserver to the Cursor
      *
-     * @param dataSetObserver
+     * @param dataSetObserver The DataSetObserver we want to set
      */
     public void setDataSetObserver(DataSetObserver dataSetObserver) {
         this.mDataSetObserver = dataSetObserver;
@@ -159,7 +170,7 @@ public abstract class RecyclerViewCursorAdapter<VH extends RecyclerView.ViewHold
         mCursor = newCursor;
         if (newCursor != null) {
             if (mDataSetObserver != null) newCursor.registerDataSetObserver(mDataSetObserver);
-            mRowIDColumn = newCursor.getColumnIndexOrThrow("_id");
+            mRowIDColumn = newCursor.getColumnIndexOrThrow(BaseColumns._ID);
             mDataValid = true;
             // notify the observers about the new cursor
             notifyDataSetChanged();

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package es.jpv.android.examples.loadersexample;
+package es.jpv.android.examples.loadersexample.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -24,7 +24,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private static DBHelper sInstance;
 
-    //Private SQL
+    //Private SQL. Only used here
     private static final String ITEMS_TABLE_DEFINITION =
             "CREATE TABLE IF NOT EXISTS " + DataProviderContract.ITEMS_TABLE_NAME +
                 " ( " + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -35,7 +35,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String ITEMS_TABLE_DROP =
             "DROP TABLE IF EXISTS " + DataProviderContract.ITEMS_TABLE_NAME;
 
-    //Public SQL
+    //Public SQL. Can be used by other classes
     public static final String ITEMS_ADD_ITEM = "INSERT INTO "
             + DataProviderContract.ITEMS_TABLE_NAME +
             "(" + DataProviderContract.ITEMS_COLUMN_ITEM + ") VALUES (?)";
@@ -43,6 +43,12 @@ public class DBHelper extends SQLiteOpenHelper {
             DataProviderContract.ITEMS_TABLE_NAME + " WHERE " + BaseColumns._ID + " = ?";
 
 
+    /**
+     * <p>Returns an instance of this class. If there is one already created we return the same</p>
+     *
+     * @param context Context associated to this Helper
+     * @return A DBHelper instance
+     */
     public static synchronized DBHelper getInstance(Context context) {
 
         // Use the application context, which will ensure that you
@@ -86,7 +92,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(ITEMS_TABLE_DEFINITION);
         //Create root items
-        for (int i=0 ; i<101 ; i++) {
+        for (int i=0 ; i<106 ; i++) {
             db.execSQL(ITEMS_INSERT_ROW, new Object[] { "Item " + i });
         }
     }
